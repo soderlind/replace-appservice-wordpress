@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Patching PHP on your own cadence is the whole point of this image; the digest in the
+  # Dockerfile's FROM is what Dependabot watches. See README.md, "Updating PHP".
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+    # Security patches are the point — don't hold them for the default 3-day cooldown.
+    cooldown:
+      default-days: 0
+    commit-message:
+      prefix: build
+    ignore:
+      # Left unignored, Dependabot moves the tag itself — it will open an 8.4 → 8.5 PR. A PHP
+      # minor is a WordPress and plugin compatibility decision; edit the tag by hand.
+      - dependency-name: php
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci

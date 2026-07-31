@@ -1,0 +1,15 @@
+Port 			2222
+ListenAddress 		0.0.0.0
+LoginGraceTime 		180
+X11Forwarding 		yes
+# App Service's portal SSH client requires one of aes128-cbc/3des-cbc/aes256-cbc and one of
+# hmac-sha1/hmac-sha1-96, so those cannot be dropped entirely. Narrowed to the strongest
+# permitted of each, with CTR/GCM and SHA-2 listed for clients that negotiate them.
+Ciphers aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc
+MACs hmac-sha2-512,hmac-sha2-256,hmac-sha1
+StrictModes 		yes
+SyslogFacility 		DAEMON
+PasswordAuthentication 	yes
+PermitEmptyPasswords 	no
+PermitRootLogin 	yes
+Subsystem sftp internal-sftp

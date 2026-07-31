@@ -1,0 +1,19 @@
+# Deploy to /home/site/wwwroot/.htaccess on the share.
+#
+# Standard WordPress rules for a single site or a subdomain multisite.
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Application passwords, REST Basic auth and Composer send credentials in the
+# Authorization header; keep it reachable from PHP.
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress

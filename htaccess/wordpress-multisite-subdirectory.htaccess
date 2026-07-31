@@ -1,0 +1,32 @@
+# Deploy to /home/site/wwwroot/.htaccess on the share.
+#
+# Canonical WordPress rules for a SUBDIRECTORY multisite (wp-config.php sets
+# SUBDOMAIN_INSTALL false). For a single site or a subdomain multisite use
+# wordpress-single.htaccess instead.
+#
+# nginx ignores .htaccess, so the live file on a site coming off the Microsoft image
+# often holds only orphaned plugin blocks and no routing rules at all. Audit it before
+# replacing — directives that were inert under nginx go live under Apache.
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Application passwords, REST Basic auth and Composer send credentials in the
+# Authorization header; keep it reachable from PHP.
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+RewriteRule . index.php [L]
+</IfModule>
+# END WordPress
