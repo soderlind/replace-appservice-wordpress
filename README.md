@@ -29,13 +29,7 @@ deliberately: they belong on the share, and changing them should not rebuild the
 ## Why
 
 The Microsoft image is patched on Microsoft's cadence, not yours. As of January 2026 the newest tag
-(`8.4_20260115.4.tuxprod`) shipped PHP 8.4.16, which is below the 8.4.21 that fixes
-[CVE-2026-7261](https://nvd.nist.gov/vuln/detail/CVE-2026-7261) — a use-after-free in `SoapServer`
-with a CVSS 3.1 base score of 9.8.
-
-That particular CVE is not reachable from WordPress, and this image does not install `ext-soap` at
-all, so the vulnerable code is absent rather than merely unused. The reason to move is the cadence,
-not the single CVE: you cannot patch PHP when you choose to.
+(`8.4_20260115.4.tuxprod`) shipped PHP 8.4.16, which is way below the [PHP Security fix 8.4.24](https://seclists.org/oss-sec/2026/q3/354).
 
 The Microsoft image is not deprecated and is still supported. This is a trade: you take on
 responsibility for base-image updates in exchange for controlling when they happen.
