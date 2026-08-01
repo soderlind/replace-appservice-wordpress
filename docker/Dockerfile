@@ -19,6 +19,19 @@ RUN set -eux; \
     docker-php-ext-install -j"$(nproc)" bcmath exif gd intl mysqli opcache pdo_mysql zip; \
     rm -rf /var/lib/apt/lists/*
 
+# imagick ships through PECL rather than with PHP. The runtime library is installed on its own
+# line so --auto-remove keeps it once the headers and build toolchain are purged; the empty
+# printf answers pecl's ImageMagick-prefix prompt with the autodetected default.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends libmagickwand-6.q16-6; \
+    apt-get install -y --no-install-recommends $PHPIZE_DEPS libmagickwand-dev; \
+    printf '\n' | pecl install imagick-3.8.1; \
+    docker-php-ext-enable imagick; \
+    pecl clear-cache; \
+    apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev; \
+    rm -rf /var/lib/apt/lists/*
+
 # App Service's SSH contract: this fixed credential is only reachable through the
 # platform's authenticated SCM tunnel, never from the network.
 RUN set -eux; \
