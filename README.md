@@ -59,7 +59,7 @@ Built from `php:8.4-apache-bookworm`. See [docker/Dockerfile](docker/Dockerfile)
 | Component | Detail |
 |---|---|
 | Web server | Apache with `mod_php`, not nginx + php-fpm ([why](#why-apache-and-not-nginx)) |
-| PHP extensions | `bcmath exif gd intl mysqli opcache pdo_mysql zip` bundled, `imagick` 3.8.1 from PECL (plus the `php:8.4` defaults: `curl dom xml SimpleXML mbstring iconv`) |
+| PHP extensions | `bcmath exif gd intl mysqli opcache pdo_mysql zip` bundled, `imagick` 3.8.1 and `redis` 6.3.0 from PECL (plus the `php:8.4` defaults: `curl dom xml SimpleXML mbstring iconv`) |
 | WP-CLI | 2.12.0 at `/usr/local/bin/wp` |
 | SSH | `sshd` on port 2222, App Service's contract for the SCM tunnel |
 | `ca-certificates` | Required if `wp-config.php` enables `MYSQLI_CLIENT_SSL` without a CA path — it then uses the system trust store |
@@ -157,11 +157,13 @@ import/export and Excel generation, `intl` for locale handling, `bcmath` for cal
 for uploads. Prefer `mysqli` and `pdo_mysql` together — WordPress uses `mysqli`, but some plugins
 assume PDO.
 
-Those all ship with PHP and go in via `docker-php-ext-install`. `imagick` does not — it is a PECL
-extension, so it needs `$PHPIZE_DEPS` and `libmagickwand-dev` at build time and a `pecl install` of
-a pinned version. WordPress registers `gd` as the fallback for `imagick`, so Site Health only warns
-when both are missing; add `imagick` when plugins call it directly or when the site needs its
-resizing quality.
+Those all ship with PHP and go in via `docker-php-ext-install`. `imagick` and `redis` do not — they
+are PECL extensions, so they need `$PHPIZE_DEPS` (plus `libmagickwand-dev` for imagick) at build
+time and a `pecl install` of a pinned version. WordPress registers `gd` as the fallback for
+`imagick`, so Site Health only warns when both are missing; add `imagick` when plugins call it
+directly or when the site needs its resizing quality. `redis` only ships the client — WordPress
+ignores it until an `object-cache.php` drop-in is on the share and a reachable Redis endpoint
+exists.
 
 ### Step 3: Read `wp-config.php` on the share
 

@@ -19,15 +19,16 @@ RUN set -eux; \
     docker-php-ext-install -j"$(nproc)" bcmath exif gd intl mysqli opcache pdo_mysql zip; \
     rm -rf /var/lib/apt/lists/*
 
-# imagick ships through PECL rather than with PHP. The runtime library is installed on its own
-# line so --auto-remove keeps it once the headers and build toolchain are purged; the empty
-# printf answers pecl's ImageMagick-prefix prompt with the autodetected default.
+# imagick and redis ship through PECL rather than with PHP. ImageMagick's runtime library is
+# installed on its own line so --auto-remove keeps it once the headers and build toolchain are
+# purged; the piped newlines accept pecl's defaults (ImageMagick prefix, redis serializers).
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends libmagickwand-6.q16-6; \
     apt-get install -y --no-install-recommends $PHPIZE_DEPS libmagickwand-dev; \
     printf '\n' | pecl install imagick-3.8.1; \
-    docker-php-ext-enable imagick; \
+    yes '' | pecl install redis-6.3.0; \
+    docker-php-ext-enable imagick redis; \
     pecl clear-cache; \
     apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev; \
     rm -rf /var/lib/apt/lists/*
