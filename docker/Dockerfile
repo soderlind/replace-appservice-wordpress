@@ -1,6 +1,6 @@
 # Digest-pinned so builds are reproducible; the tag stays so Dependabot knows which stream to
 # follow and raises a PR when upstream publishes a php:8.4-apache patch.
-FROM php:8.4-apache-bookworm@sha256:721cfc216f3a029c635ae55b3a43fb5c22ac271871a5453f940d392ed223675d
+FROM php:8.4-apache-bookworm@sha256:7143d0ad6b79cf85351fa26934e680779c1e9dcbb5c2ac5ee74f1b2d88b2b304
 
 RUN set -eux; \
     apt-get update; \
