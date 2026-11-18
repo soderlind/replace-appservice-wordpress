@@ -1,6 +1,17 @@
 # Digest-pinned so builds are reproducible; the tag stays so Dependabot knows which stream to
 # follow and raises a PR when upstream publishes a php:8.4-apache patch.
-FROM php:8.4-apache-bookworm@sha256:721cfc216f3a029c635ae55b3a43fb5c22ac271871a5453f940d392ed223675d
+FROM php:8.4-apache-trixie@sha256:884f64b47174de2c0e813270fe7b24a18605729fcebe201302d98c38805530d0
+
+# The base image lags Debian security updates, so Apache is upgraded in place from
+# trixie-security; the guard fails the build if that ever resolves to an older release.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends --only-upgrade \
+        apache2 apache2-bin apache2-data apache2-utils; \
+    rm -rf /var/lib/apt/lists/*; \
+    apache_version="$(apache2 -v | sed -n 's/^Server version: Apache\/\([^ ]*\).*/\1/p')"; \
+    test -n "$apache_version"; \
+    dpkg --compare-versions "$apache_version" ge 2.4.71
 
 RUN set -eux; \
     apt-get update; \
@@ -24,7 +35,7 @@ RUN set -eux; \
 # purged; the piped newlines accept pecl's defaults (ImageMagick prefix, redis serializers).
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends libmagickwand-6.q16-6; \
+    apt-get install -y --no-install-recommends libmagickwand-7.q16-10; \
     apt-get install -y --no-install-recommends $PHPIZE_DEPS libmagickwand-dev; \
     printf '\n' | pecl install imagick-3.8.1; \
     yes '' | pecl install redis-6.3.0; \

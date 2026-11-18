@@ -54,11 +54,11 @@ Two consequences worth internalising:
 
 ## What the image contains
 
-Built from `php:8.4-apache-bookworm`. See [docker/Dockerfile](docker/Dockerfile).
+Built from `php:8.4-apache-trixie` (Debian 13); the image build upgrades Apache from `trixie-security` and enforces 2.4.71 or later. See [docker/Dockerfile](docker/Dockerfile).
 
 | Component | Detail |
 |---|---|
-| Web server | Apache with `mod_php`, not nginx + php-fpm ([why](#why-apache-and-not-nginx)) |
+| Web server | Apache 2.4.71+ with `mod_php`, not nginx + php-fpm ([why](#why-apache-and-not-nginx)) |
 | PHP extensions | `bcmath exif gd intl mysqli opcache pdo_mysql zip` bundled, `imagick` 3.8.1 and `redis` 6.3.0 from PECL (plus the `php:8.4` defaults: `curl dom xml SimpleXML mbstring iconv`) |
 | WP-CLI | 2.12.0 at `/usr/local/bin/wp` |
 | SSH | `sshd` on port 2222, App Service's contract for the SCM tunnel |
@@ -363,7 +363,7 @@ until the new image has run long enough to trust — it is the one step `git rev
 
 This is the point of the exercise:
 
-1. Dependabot raises a PR bumping the `FROM` digest when a new `php:8.4-apache-bookworm` is
+1. Dependabot raises a PR bumping the `FROM` digest when a new `php:8.4-apache-trixie` is
    published. Configured in [.github/dependabot.yml](.github/dependabot.yml).
 2. Merge it. The change is under `docker/**`, so the build workflow fires on the path filter,
    publishes a new image and prints its digest.
